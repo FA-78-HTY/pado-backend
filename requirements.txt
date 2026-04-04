@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pandas
+numpy
+finance-datareader
+pykrx
+beautifulsoup4
+requests
