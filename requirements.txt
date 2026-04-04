@@ -6,4 +6,4 @@ finance-datareader
 pykrx
 beautifulsoup4
 requests
-setuptools
+setuptools<82.0.0
