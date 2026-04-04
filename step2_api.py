@@ -17,6 +17,7 @@ from bs4 import BeautifulSoup
 from pykrx import stock
 import FinanceDataReader as fdr
 from typing import Optional, List, Dict, Any
+import time
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -530,3 +531,8 @@ def reload_cache():
     _df_cache = pd.read_csv(CSV_PATH, dtype={'ticker': str})
     _cache_time = datetime.now().timestamp()
     return {"loaded": len(_df_cache), "columns": list(_df_cache.columns)}
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 10000))
+    uvicorn.run("step2_api:app", host="0.0.0.0", port=port)
