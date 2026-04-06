@@ -42,6 +42,21 @@ _df_cache: pd.DataFrame = pd.DataFrame()
 _cache_time: float = 0.0
 
 
+# ── 안전한 숫자 변환 (거래정지/신규상장 종목의 '-' 처리) ──────────
+def safe_float(val, default: float = 0.0) -> float:
+    """'-', None, 빈 문자열 등을 안전하게 float으로 변환"""
+    try:
+        s = str(val).strip().replace(',', '')
+        if s in ('', '-', '--', 'N/A', 'nan', 'None'):
+            return default
+        return float(s)
+    except (ValueError, TypeError):
+        return default
+
+def safe_int(val, default: int = 0) -> int:
+    return int(safe_float(val, default))
+
+
 # ════════════════════════════════════════════════════════════════
 # LAYER 1: FinanceDataReader - 전체 종목 리스트
 # ════════════════════════════════════════════════════════════════
@@ -320,10 +335,10 @@ async def init_db(force: bool = False):
                     "Code": str(r["Code"]),
                     "Name": str(r["Name"]),
                     "Market": market_label,
-                    "Close": int(float(r.get("Close", 0))),
-                    "Change": round(float(r.get("ChagesRatio", 0)), 2),
-                    "Volume": int(float(r.get("Volume", 0))),
-                    "Amount": int(float(r.get("Amount", 0))),
+                    "Close": safe_int(r.get("Close", 0)),
+                    "Change": round(safe_float(r.get("ChagesRatio", 0)), 2),
+                    "Volume": safe_int(r.get("Volume", 0)),
+                    "Amount": safe_int(r.get("Amount", 0)),
                     "UpdatedAt": datetime.now().strftime("%Y-%m-%d %H:%M")
                 })
         
@@ -420,10 +435,10 @@ async def scan(
                     "Code": str(r["Code"]),
                     "Name": str(r["Name"]),
                     "Market": market_label,
-                    "Close": int(float(r.get("Close", 0))),
-                    "Change": round(float(r.get("ChagesRatio", 0)), 2),
-                    "Volume": int(float(r.get("Volume", 0))),
-                    "Amount": int(float(r.get("Amount", 0))),
+                    "Close": safe_int(r.get("Close", 0)),
+                    "Change": round(safe_float(r.get("ChagesRatio", 0)), 2),
+                    "Volume": safe_int(r.get("Volume", 0)),
+                    "Amount": safe_int(r.get("Amount", 0)),
                     "UpdatedAt": datetime.now().strftime("%Y-%m-%d %H:%M")
                 })
         if rows:
